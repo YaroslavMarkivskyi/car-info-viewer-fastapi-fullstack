@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict
 
 from fastapi import FastAPI, Query, Path, HTTPException, status, Body
+from fastapi.encoders import jsonable_encoder
 
 from database import cars
 from models import Car
@@ -39,3 +40,15 @@ def add_cars(body_cars: List[Car], min_id: Optional[int] = Body(0)):
         min_id += 1
 
 
+@app.put("/cars/{car_id}", response_model=Dict[str, Car])
+def update_car(car_id: int, car: Car = Body(...)):
+    stored = cars.get(car_id)
+    if not stored:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Could not find car with given ID.")
+    stored = Car(**stored)
+    new = car.dict(exclude_unset=True)
+    new = stored.copy(update=new)
+    cars[car_id] = jsonable_encoder(new)
+    response = {}
+    response[car_id] = cars[car_id]
+    return response
