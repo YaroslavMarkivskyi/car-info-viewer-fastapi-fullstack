@@ -2,12 +2,17 @@ from typing import Optional, List, Dict
 
 from fastapi import FastAPI, Query, Path, HTTPException, status, Body
 from fastapi.encoders import jsonable_encoder
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 from database import cars
 from models import Car
 
 
+templates = Jinja2Templates(directory='templates')
+
 app = FastAPI()
+app.mount("/static", StaticFiles(directory='static'), name="static")
 
 
 @app.get("/cars", response_model=List[Dict[str, Car]])
