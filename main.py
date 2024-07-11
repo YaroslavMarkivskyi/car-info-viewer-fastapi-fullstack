@@ -19,5 +19,9 @@ def get_cars(number: Optional[str] = Query("10", max_length=3)):
     return response
 
 
-
-
+@app.get("/cars/{car_id}", response_model=Car)
+def get_car_by_id(car_id: int = Path(...,ge=0, lt=1000)):
+    car = cars.get(car_id)
+    if not car:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Could not find car by ID.")
+    return car
