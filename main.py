@@ -21,7 +21,7 @@ def get_cars(number: Optional[str] = Query("10", max_length=3)):
 
 
 @app.get("/cars/{car_id}", response_model=Car)
-def get_car_by_id(car_id: int = Path(...,ge=0, lt=1000)):
+def get_car_by_id(car_id: int = Path(..., ge=0, lt=1000)):
     car = cars.get(car_id)
     if not car:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Could not find car by ID.")
@@ -52,3 +52,10 @@ def update_car(car_id: int, car: Car = Body(...)):
     response = {}
     response[car_id] = cars[car_id]
     return response
+
+
+@app.delete("/cars/{id}")
+def delete_car(car_id: int):
+    if not cars.get('id'):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Could not find car with given ID.")
+    del cars[car_id]
